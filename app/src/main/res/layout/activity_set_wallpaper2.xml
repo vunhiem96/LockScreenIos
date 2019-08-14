@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
-        android:id="@+id/ll_frame"
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
     <ImageView
-            android:id="@+id/img_background_main"
+            android:id="@+id/img_background"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="fitXY"
             android:src="@drawable/icon_background_lock"
-            />
-
-
+            android:scaleType="fitXY"/>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                   android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
@@ -22,8 +18,9 @@
                   android:layout_height="match_parent"
                   android:id="@+id/ln_lock"
                   android:weightSum="10">
-        <RelativeLayout android:background="#000" android:layout_width="match_parent" android:layout_height="0dp"
-                        android:layout_weight="0.4">
+        <RelativeLayout android:layout_width="match_parent" android:layout_height="0dp"
+                        android:layout_weight="0.4"
+                        android:background="#000">
             <ImageView
                     android:layout_centerVertical="true"
                     android:id="@+id/img_song" android:layout_width="40dp"
@@ -58,37 +55,49 @@
         </RelativeLayout>
         <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
                       android:layout_weight="7.6"
-                      android:orientation="vertical">
+                      android:orientation="vertical"
+                      android:weightSum="10">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
+                          android:layout_weight="9"
+                          android:orientation="vertical"
+            >
 
-
-            <RelativeLayout
-                    android:layout_marginTop="50dp"
-                    android:layout_gravity="center_horizontal"
-                    android:background="@drawable/background"
-                    android:layout_width="50dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_height="50dp">
-                <ImageView
-                        android:layout_centerVertical="true"
-                        android:layout_centerHorizontal="true"
-                        android:layout_width="20dp"
-                        android:src="@drawable/icon_lock"
-                        android:layout_height="30dp"/>
-            </RelativeLayout>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                      android:layout_gravity="center_horizontal"
-                      android:text="10:10"
-                      android:textSize="70dp"
-                      android:textColor="#FFFF"
-                      android:id="@+id/tv_time"
-            />
-            <TextView
-                    android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:textSize="20sp"
-                    android:textColor="#FFFF"
-                    android:text="Thứ Tư,5 tháng 8"
-                    android:id="@+id/tv_date"/>
+                <RelativeLayout
+                        android:layout_marginTop="50dp"
+                        android:layout_gravity="center_horizontal"
+                        android:background="@drawable/background"
+                        android:layout_width="50dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_height="50dp">
+                    <ImageView
+                            android:layout_centerVertical="true"
+                            android:layout_centerHorizontal="true"
+                            android:layout_width="20dp"
+                            android:src="@drawable/icon_lock"
+                            android:layout_height="30dp"/>
+                </RelativeLayout>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                          android:layout_gravity="center_horizontal"
+                          android:text="10:10"
+                          android:textSize="70dp"
+                          android:textColor="#FFFF"
+                          android:id="@+id/tv_time"
+                />
+                <TextView
+                        android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:textSize="20sp"
+                        android:textColor="#FFFF"
+                        android:text="Thứ Tư,5 tháng 8"
+                        android:id="@+id/tv_date"/>
+            </LinearLayout>
+            <TextView android:layout_width="wrap_content" android:layout_height="0dp"
+                      android:layout_weight="1"
+                      android:text="Do you use this picture?"
+            android:textSize="25sp"
+            android:textColor="#FFF"
+            android:textStyle="bold"
+            android:layout_gravity="center_horizontal"/>
         </LinearLayout>
 
         <RelativeLayout
@@ -97,38 +106,19 @@
                 android:layout_height="0dp"
                 android:layout_weight="2"
                 android:weightSum="2">
-            <RelativeLayout
-                    android:id="@+id/rl_flash"
-                    android:layout_marginLeft="50dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_gravity="center_horizontal"
-                    android:background="@drawable/background"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp">
-                <ImageView
-                        android:layout_centerVertical="true"
-                        android:layout_centerHorizontal="true"
-                        android:layout_width="20dp"
-                        android:src="@drawable/icon_flash"
-                        android:layout_height="30dp"/>
-            </RelativeLayout>
-            <RelativeLayout
-                    android:id="@+id/rl_camera"
-                    android:layout_marginTop="10dp"
-                    android:layout_alignParentRight="true"
-                    android:layout_gravity="center_horizontal"
-                    android:background="@drawable/background"
-                    android:layout_width="50dp"
-                    android:layout_marginRight="50dp"
-                    android:layout_height="50dp">
-                <ImageView
-                        android:id="@+id/img_camera"
-                        android:layout_centerVertical="true"
-                        android:layout_centerHorizontal="true"
-                        android:layout_width="20dp"
-                        android:src="@drawable/icon_camera"
-                        android:layout_height="30dp"/>
-            </RelativeLayout>
+            <Button android:background="@drawable/nenchat"
+                    android:id="@+id/btn_select"
+                    android:layout_marginLeft="40dp"
+                    android:layout_width="100dp" android:layout_height="50dp"
+                    android:text="Select"/>
+
+            <Button
+                    android:background="@drawable/nenchat"
+                    android:id="@+id/btn_cancle"
+                    android:layout_alignParentRight="true" android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:text="Cancle"
+                    android:layout_marginRight="40dp"/>
 
             <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                       android:layout_above="@+id/viewBottom"
@@ -136,6 +126,7 @@
                       android:text="Slide up to open"
                       android:textColor="#FFFF"
                       android:layout_marginBottom="5dp"
+
             />
             <Button android:id="@+id/viewBottom"
                     android:background="@drawable/while_round_bg"

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".screens.wallpaper.Wallpaper"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:background="#F0E9E9">
+    <RelativeLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:background="#fff">
+        <ImageView android:id="@+id/img_back"
+                   android:layout_width="65dp" android:layout_height="50dp"
+                   android:src="@mipmap/ic_back2"
+        />
+        <TextView
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Set Your Wallpaper"
+                android:textColor="#F00"
+                android:textSize="20sp"/>
+    </RelativeLayout>
+    <RelativeLayout
+            android:clickable="true"
+            android:id="@+id/rl_select_from"
+            android:background="@drawable/button_selector"
+            android:layout_marginTop="5dp"
+                    android:layout_width="match_parent" android:layout_height="wrap_content">
+        <TextView android:layout_marginLeft="10dp"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                  android:text="Select From Gallery"
+                  android:textSize="20sp"
+                  android:textColor="#2196F3"
+        android:layout_centerVertical="true"/>
+        <ImageView
+                android:background="@drawable/button_selector"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="5dp"
+                android:id="@+id/img_add_photo"
+                android:layout_width="50dp" android:layout_height="40dp"
+                android:src="@drawable/icon_add_photo"
+        />
+    </RelativeLayout>
+    <androidx.recyclerview.widget.RecyclerView
+            android:layout_marginTop="5dp"
+            android:background="#FFF"
+            android:id="@+id/rv_wallpaper"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+</LinearLayout>

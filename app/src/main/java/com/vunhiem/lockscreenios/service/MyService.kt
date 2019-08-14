@@ -1,11 +1,18 @@
 package com.vunhiem.lockscreenios.service
 
+import android.annotation.SuppressLint
+import android.annotation.TargetApi
 import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.graphics.PixelFormat
+import android.hardware.Camera
+import android.hardware.camera2.CameraManager
+import android.net.Uri
+import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.util.Log
@@ -15,35 +22,18 @@ import android.view.View
 import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
-import android.widget.TextView
+import android.widget.*
+import com.example.ibikenavigationkotlin.utils.AppConfig
+import com.squareup.picasso.Picasso
 import com.vunhiem.lockscreenios.R
+import com.vunhiem.lockscreenios.screens.main.GroupViewPassword
 import com.vunhiem.lockscreenios.screens.main.MyGroupView
+import java.io.File
 import java.text.SimpleDateFormat
 
 
 class MyService : Service() {
-    var x: Int = 0
-    var y: Int = 0
-    var touchX: Float = 0.0f
-    var touchY: Float = 0.0f
-    lateinit var rlCamera: RelativeLayout
-    lateinit var imgCamera: ImageView
-    private var touchToMove: Boolean = false
-    lateinit var tvTime: TextView
-    lateinit var tvDate: TextView
-    private lateinit var anim: Animation
-    private var wm: WindowManager? = null
-    private var mView: MyGroupView? = null
-    private var mViewControl: MyGroupView? = null
-    private var mParams: WindowManager.LayoutParams? = null
-    private var mControlParams: WindowManager.LayoutParams? = null
-    private var mcontrolView: WindowManager.LayoutParams? = null
-    private var mReceiver: BroadcastReceiver? = null
-    private var isShowing = false
-    private lateinit var linearLayout: LinearLayout
+
     override fun onBind(intent: Intent): IBinder {
         TODO("Return the communication channel to the service.")
     }
@@ -51,7 +41,7 @@ class MyService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         initview()
         setTime()
-        return START_STICKY
+        return START_REDELIVER_INTENT
     }
 
     private fun initview() {
@@ -60,7 +50,26 @@ class MyService : Service() {
         swipe()
         anim = AnimationUtils.loadAnimation(this, R.anim.up)
 
+
     }
+//    private fun showIcon() {
+//        try {
+//            wm!!.removeView(m)
+//        } catch (e: Exception) {
+//            println("Bugs")
+//        }
+//
+//        windowManager!!.addView(viewBottom, bottomParams)
+//    }
+//
+//    private fun showControl() {
+//        try {
+//            windowManager!!.removeView(viewBottom)
+//
+//        } catch (e: Exception) {
+//            println("Bugs")
+//        }
+//    }
 
     fun setTime() {
         val h = Handler()
@@ -79,22 +88,382 @@ class MyService : Service() {
             })
     }
 
+
+    fun initViewWinManager() {
+        mView!!.setSystemUiVisibility(
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+
+                    or View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+
+                    or View.SYSTEM_UI_FLAG_IMMERSIVE
+        )
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    fun mCamera() {
+        isFlashOn = false
+        objCameraManager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
+
+
+        mCameraId = objCameraManager!!.cameraIdList[0]
+
+
+        rlFlash.setOnClickListener {
+            try {
+                if (isFlashOn == false) {
+                    turnOnFlash()
+                    isFlashOn = true
+                } else {
+                    turnOffFlash()
+                    isFlashOn = false
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            true
+        }
+    }
+
+    private fun turnOnFlash() {
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            objCameraManager!!.setTorchMode(mCameraId!!, true)
+        } else {
+            if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH)) {
+                if (camera == null)
+                    Log.i("tag", "flahON")
+                camera = Camera.open()
+                var p = camera!!.getParameters()
+                p!!.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH)
+                camera!!.setParameters(p)
+                camera!!.startPreview()
+            }
+        }
+
+    }
+
+    private fun turnOffFlash() {
+//        try {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            objCameraManager!!.setTorchMode(mCameraId!!, false)
+        } else {
+            Log.i("tag", "flahof")
+            if (camera != null) {
+                camera!!.stopPreview()
+                camera!!.release()
+                camera = null
+            }
+
+        }
+
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun createIconViewLock() {
+        wmpass = getSystemService(Context.WINDOW_SERVICE) as WindowManager?
+        passView = GroupViewPassword(applicationContext)
+        val v: View = View.inflate(applicationContext, com.vunhiem.lockscreenios.R.layout.layout_password, passView)
+        tvCanclePass = v.findViewById(R.id.tv_cancle_pass)
+        tvCall = v.findViewById(R.id.tv_call)
+        tvPin = v.findViewById(R.id.tv_pin)
+        imgPin = v.findViewById(R.id.img_pin)
+        ll_circle_pass = v.findViewById(R.id.ln_circle_pass)
+
+        pass1 = v.findViewById(R.id.pass1)
+        pass2 = v.findViewById(R.id.pass2)
+        pass3 = v.findViewById(R.id.pass3)
+        pass4 = v.findViewById(R.id.pass4)
+        pass5 = v.findViewById(R.id.pass5)
+        pass6 = v.findViewById(R.id.pass6)
+
+
+
+        btn0 = v.findViewById(R.id.btn_0)
+        btn1 = v.findViewById(R.id.btn_1)
+        btn2 = v.findViewById(R.id.btn_2)
+        btn3 = v.findViewById(R.id.btn_3)
+        btn5 = v.findViewById(R.id.btn_5)
+        btn4 = v.findViewById(R.id.btn_4)
+        btn6 = v.findViewById(R.id.btn_6)
+        btn7 = v.findViewById(R.id.btn_7)
+        btn8 = v.findViewById(R.id.btn_8)
+        btn9 = v.findViewById(R.id.btn_9)
+
+
+        passView!!.setSystemUiVisibility(
+            View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+
+                    or View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+
+                    or View.SYSTEM_UI_FLAG_IMMERSIVE
+        )
+
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            mParamsPass = WindowManager.LayoutParams()
+            mParamsPass!!.width = WindowManager.LayoutParams.MATCH_PARENT
+            mParamsPass!!.height = WindowManager.LayoutParams.MATCH_PARENT
+            mParamsPass!!.flags =
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or WindowManager.LayoutParams.FLAG_FULLSCREEN
+            mParamsPass!!.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+            PixelFormat.TRANSLUCENT
+
+            mParams!!.x = 0
+            mParams!!.y = 0
+
+            wmpass!!.addView(passView, mParamsPass)
+            Log.i("tag", "onaddPass")
+            isshowPass = true
+
+            mReceiver = LockScreenStateReceiver()
+            val filter = IntentFilter(Intent.ACTION_SCREEN_ON)
+            filter.addAction(Intent.ACTION_BATTERY_CHANGED)
+            filter.addAction(Intent.ACTION_USER_PRESENT)
+            filter.addAction(Intent.ACTION_SCREEN_OFF)
+            registerReceiver(mReceiver, filter)
+        } else {
+
+            mParamsPass = WindowManager.LayoutParams()
+            mParamsPass!!.width = WindowManager.LayoutParams.MATCH_PARENT
+            mParamsPass!!.height = WindowManager.LayoutParams.MATCH_PARENT
+            mParamsPass!!.gravity = Gravity.BOTTOM
+            mParamsPass!!.format = PixelFormat.TRANSLUCENT
+            mParamsPass!!.type = WindowManager.LayoutParams.TYPE_PHONE
+            mParamsPass!!.flags = (WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+                    or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                    or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                    or WindowManager.LayoutParams.FLAG_DIM_BEHIND
+                    or WindowManager.LayoutParams.FLAG_FULLSCREEN)
+
+            mParams!!.x = 0
+            mParams!!.y = 0
+
+            wmpass!!.addView(passView, mParamsPass)
+            Log.i("tag", "onaddPass")
+            isshowPass = true
+
+            mReceiver = LockScreenStateReceiver()
+            val filter = IntentFilter(Intent.ACTION_SCREEN_ON)
+            filter.addAction(Intent.ACTION_BATTERY_CHANGED)
+            filter.addAction(Intent.ACTION_USER_PRESENT)
+            filter.addAction(Intent.ACTION_SCREEN_OFF)
+            registerReceiver(mReceiver, filter)
+
+
+        }
+
+        listPass = ArrayList()
+
+
+        tvCanclePass.setOnClickListener {
+            if(listPass.size==0){
+                wmpass!!.removeView(passView)
+                wm!!.addView(mView, mParams)
+            }else {
+                listPass.clear()
+                pass1.setImageResource(R.drawable.circle_password)
+                pass2.setImageResource(R.drawable.circle_password)
+                pass3.setImageResource(R.drawable.circle_password)
+                pass4.setImageResource(R.drawable.circle_password)
+                pass5.setImageResource(R.drawable.circle_password)
+                pass6.setImageResource(R.drawable.circle_password)
+            }
+        }
+        tvCall.setOnClickListener {
+            val callIntent = Intent("com.android.phone.EmergencyDialer.DIAL")
+            callIntent.setData(Uri.parse("tel:" + "113"))
+            callIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(callIntent)
+        }
+        btn0.setOnClickListener {
+            var size: Int = listPass.size
+            if (size < 6)
+                listPass.add(0)
+            password()
+            Log.i("tag", "size " + size)
+            Log.i("tag", "haha" + listPass)
+        }
+        btn1.setOnClickListener {
+            var size: Int = listPass.size
+            if (size < 6)
+                listPass.add(1)
+            password()
+            Log.i("tag", "haha" + listPass)
+        }
+        btn2.setOnClickListener {
+            var size: Int = listPass.size
+            if (size < 6)
+                listPass.add(2)
+            password()
+            Log.i("tag", "" + listPass)
+        }
+        btn3.setOnClickListener {
+            var size: Int = listPass.size
+            if (size < 6)
+                listPass.add(3)
+            password()
+            Log.i("tag", "" + listPass)
+        }
+        btn4.setOnClickListener {
+            var size: Int = listPass.size
+            if (size < 6)
+                listPass.add(4)
+            password()
+            Log.i("tag", "" + listPass)
+        }
+        btn5.setOnClickListener {
+            var size: Int = listPass.size
+            if (size < 6)
+                listPass.add(5)
+            password()
+            Log.i("tag", "" + listPass)
+        }
+        btn6.setOnClickListener {
+            var size: Int = listPass.size
+            if (size < 6)
+                listPass.add(6)
+            password()
+            Log.i("tag", "" + listPass)
+        }
+        btn7.setOnClickListener {
+            var size: Int = listPass.size
+            if (size < 6)
+                listPass.add(7)
+            password()
+            Log.i("tag", "" + listPass)
+        }
+        btn8.setOnClickListener {
+            var size: Int = listPass.size
+            if (size < 6)
+                listPass.add(8)
+            password()
+            Log.i("tag", "" + listPass)
+        }
+        btn9.setOnClickListener {
+            var size: Int = listPass.size
+            if (size < 6)
+                listPass.add(9)
+            password()
+            Log.i("tag", "" + listPass)
+
+        }
+
+
+//}else{
+//    btn0.isEnabled
+//    btn1.isEnabled
+//    btn2.isEnabled
+//    btn3.isEnabled
+//    btn4.isEnabled
+//    btn5.isEnabled
+//    btn6.isEnabled
+//    btn7.isEnabled
+//    btn8.isEnabled
+//    btn9.isEnabled
+
+
+    }
+
+    fun password() {
+        if (listPass.size == 1) {
+            pass1.setImageResource(R.drawable.circle_password2)
+        }
+        if (listPass.size == 2) {
+            pass2.setImageResource(R.drawable.circle_password2)
+        }
+        if (listPass.size == 3) {
+            pass3.setImageResource(R.drawable.circle_password2)
+        }
+        if (listPass.size == 4) {
+            pass4.setImageResource(R.drawable.circle_password2)
+        }
+        if (listPass.size == 5) {
+            pass5.setImageResource(R.drawable.circle_password2)
+        }
+        if (listPass.size == 6) {
+            pass6.setImageResource(R.drawable.circle_password2)
+        }
+        if (listPass.size == 6) {
+            var pas: Int = listPass[0]
+            var pas1: Int = listPass[1]
+            var pas2: Int = listPass[2]
+            var pas3: Int = listPass[3]
+            var pas4: Int = listPass[4]
+            var pas5: Int = listPass[5]
+
+            var password: String = "$pas$pas1$pas2$pas3$pas4$pas5"
+            var x = AppConfig.getPassord(applicationContext)
+
+            if (password == x && wmpass != null) {
+                val handler = android.os.Handler()
+                handler.postDelayed({ wmpass!!.removeView(passView) }, 300)
+
+            } else {
+                val animShake: Animation = AnimationUtils.loadAnimation(applicationContext, R.anim.shake)
+                ll_circle_pass.startAnimation(animShake)
+                val handler = android.os.Handler()
+                handler.postDelayed({
+
+                    pass1.setImageResource(R.drawable.circle_password)
+                    pass2.setImageResource(R.drawable.circle_password)
+                    pass3.setImageResource(R.drawable.circle_password)
+                    pass4.setImageResource(R.drawable.circle_password)
+                    pass5.setImageResource(R.drawable.circle_password)
+                    pass6.setImageResource(R.drawable.circle_password)
+                }, 100)
+
+                listPass.clear()
+
+            }
+        }
+    }
+
     private fun createIconView() {
-
-        mView = MyGroupView(this)
-        val view: View = View.inflate(this, com.vunhiem.lockscreenios.R.layout.lock_layout, mView)
+        mView = MyGroupView(applicationContext)
+        val view: View = View.inflate(applicationContext, com.vunhiem.lockscreenios.R.layout.lock_layout, mView)
         linearLayout = view.findViewById(com.vunhiem.lockscreenios.R.id.ln_lock)
-
+        initViewWinManager()
         rlCamera = view.findViewById(com.vunhiem.lockscreenios.R.id.rl_camera)
+        rlFlash = view.findViewById(R.id.rl_flash)
         tvTime = view.findViewById(com.vunhiem.lockscreenios.R.id.tv_time)
         tvDate = view.findViewById(com.vunhiem.lockscreenios.R.id.tv_date)
+        tvPin = view.findViewById(R.id.tv_pin)
+        imgPin = view.findViewById(R.id.img_pin)
+
+        ll_frame = view.findViewById(R.id.ll_frame)
+
+        imgBackgroundLock = view.findViewById(R.id.img_background_main)
+
+//        mParams = WindowManager.LayoutParams(
+//            ViewGroup.LayoutParams.WRAP_CONTENT,
+//            ViewGroup.LayoutParams.WRAP_CONTENT,
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY}
+//            else { WindowManager.LayoutParams.TYPE_SYSTEM_ALERT} ,
+//            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+//            PixelFormat.TRANSLUCENT)
+//        mParams!!.x = 0
+//        mParams!!.y = 0
+//        mParams!!.gravity = Gravity.CENTER or Gravity.CENTER
 
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             mParams = WindowManager.LayoutParams()
             mParams!!.width = WindowManager.LayoutParams.MATCH_PARENT
             mParams!!.height = WindowManager.LayoutParams.MATCH_PARENT
-            mParams!!.flags = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or WindowManager.LayoutParams.FLAG_FULLSCREEN
+            mParams!!.flags = (WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+                    or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                    or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                    or WindowManager.LayoutParams.FLAG_DIM_BEHIND
+                    or WindowManager.LayoutParams.FLAG_FULLSCREEN)
+            mParams!!.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
             PixelFormat.TRANSLUCENT
         } else {
 
@@ -104,14 +473,11 @@ class MyService : Service() {
             mParams!!.gravity = Gravity.BOTTOM
             mParams!!.format = PixelFormat.TRANSLUCENT
             mParams!!.type = WindowManager.LayoutParams.TYPE_PHONE
-//            mParams!!.flags = WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-//            mParams!!.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-//            mParams!!.flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND
-//            mParams!!.flags = WindowManager.LayoutParams.FLAG_DIM_BEHIND
-//            mParams!!.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-//            mParams!!.flags = WindowManager.LayoutParams.FLAG_FULLSCREEN
-            mParams!!.flags =
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or WindowManager.LayoutParams.FLAG_FULLSCREEN
+            mParams!!.flags = (WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+                    or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                    or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                    or WindowManager.LayoutParams.FLAG_DIM_BEHIND
+                    or WindowManager.LayoutParams.FLAG_FULLSCREEN)
 
             mParams!!.x = 0
             mParams!!.y = 0
@@ -120,16 +486,17 @@ class MyService : Service() {
             val intent = Intent("android.media.action.IMAGE_CAPTURE")
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
-            wm!!.removeViewImmediate(mView)
+
         }
+        mCamera()
 
 
         mReceiver = LockScreenStateReceiver()
         val filter = IntentFilter(Intent.ACTION_SCREEN_ON)
+        filter.addAction(Intent.ACTION_BATTERY_CHANGED)
         filter.addAction(Intent.ACTION_USER_PRESENT)
         filter.addAction(Intent.ACTION_SCREEN_OFF)
         registerReceiver(mReceiver, filter)
-
 
     }
 
@@ -145,14 +512,32 @@ class MyService : Service() {
                 }
 
                 MotionEvent.ACTION_MOVE -> {
-
                     val delY = motionEvent.rawY - touchY
-                    mParams!!.y = (y - delY).toInt()
-                    wm!!.updateViewLayout(mView, mParams)
+                    Log.i("hi", "$delY")
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
 
-                    if (delY * delY > 40000) {
-                        touchToMove = true
+                        mParams!!.y = (y + delY).toInt()
+
+                        if (mParams!!.y <= 0) {
+                            Log.i("hi", "${(y + delY).toInt()}")
+                            wm!!.updateViewLayout(mView, mParams)
+                        }
+                        if (delY * delY > 40000 && mParams!!.y <= 0) {
+                            touchToMove = true
+                        }
+                    } else {
+
+                        mParams!!.y = (y - delY).toInt()
+
+                        if (mParams!!.y >= 0) {
+                            wm!!.updateViewLayout(mView, mParams)
+                        }
+                        if (delY * delY > 40000 && mParams!!.y >= 0) {
+                            touchToMove = true
+                        }
                     }
+
+
                 }
                 MotionEvent.ACTION_UP -> {
                     if (touchToMove) {
@@ -160,6 +545,18 @@ class MyService : Service() {
                         linearLayout.animation = anim
                         linearLayout.animation.start()
                         wm!!.removeViewImmediate(mView)
+
+//                        val animUp: Animation = AnimationUtils.loadAnimation(applicationContext, R.anim.up)
+//                        ll_frame.startAnimation(animUp)
+
+                        var xx: Boolean = AppConfig.getStatusPassword(applicationContext)!!
+                        Log.i("tag", "onaddPass1")
+                        if (xx == true) {
+                            Log.i("tag", "onaddPass2")
+                            createIconViewLock()
+                        }
+
+
                     } else {
                         mParams!!.y = 0
                         wm!!.updateViewLayout(mView, mParams)
@@ -192,49 +589,121 @@ class MyService : Service() {
         })
     }
 
+
     inner class LockScreenStateReceiver : BroadcastReceiver() {
 
 
         override fun onReceive(context: Context, intent: Intent) {
 
             if (intent.action == Intent.ACTION_SCREEN_OFF) {
-                Log.i("tag", "0FF")
+                initViewWinManager()
+                Log.i("tag", "OFF")
+                if (wm != null) {
+                    try {
+                        wm!!.removeView(mView)
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+                var idWallpaper = AppConfig.getIdWallPaper(applicationContext)
+                var uriWallpaper = AppConfig.getIdWallPaperUri(applicationContext)
+
+                if (idWallpaper != null) {
+                    imgBackgroundLock.setImageResource(AppConfig.getIdWallPaper(applicationContext)!!.toInt())
+                }
+                if (AppConfig.getIdWallPaperUri(applicationContext) != null) {
+                    Picasso.with(applicationContext).load(File(uriWallpaper)).into(imgBackgroundLock)
+                }
 
                 wm!!.addView(mView, mParams)
 
+                if (wmpass != null) {
+                    try {
+                        Log.i("tag", "onaddPass")
+                        wmpass!!.removeView(passView)
 
-                isShowing = false
-
-                if (intent.action == Intent.ACTION_SCREEN_ON) {
-                    Log.i("tag", "ON")
-                    if (isShowing) {
-                        wm!!.addView(mView, mParams)
-                        isShowing = true
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
-//                } else if (intent.action == Intent.ACTION_USER_PRESENT) {
-//
-//                    if (isShowing) {
-//                        wm!!.removeViewImmediate(mView)
-//                        isShowing = false
-//                    }
                 }
+
+
             }
+            if (intent.action == Intent.ACTION_BATTERY_CHANGED) {
+                Log.i("tag", "on Pin")
+                initViewWinManager()
+                var level: Int
+                level = intent.getIntExtra("level", 0)
+                tvPin.text = (Integer.toString(level) + "%")
+                if (level > 50) {
+                    imgPin.setImageResource(R.drawable.icon_pin60)
+                } else {
+                    imgPin.setImageResource(R.drawable.icon_pin30)
+
+                }
+
+            }
+
+
         }
     }
 
+
     override fun onDestroy() {
-        //unregister receiver when the service is destroy
         if (mReceiver != null) {
             unregisterReceiver(mReceiver)
         }
 
-        //remove view if it is showing and the service is destroy
-//        if (isShowing) {
-//
-//            wm!!.removeViewImmediate(mView)
-//            isShowing = false
-//        }
         super.onDestroy()
     }
 
+    private var objCameraManager: CameraManager? = null
+    private var camera: Camera? = null
+    private var mCameraId: String? = null
+    var isFlashOn: Boolean? = null
+    var y: Int = 0
+    var touchY: Float = 0.0f
+    lateinit var rlCamera: RelativeLayout
+    lateinit var rlFlash: RelativeLayout
+    private var touchToMove: Boolean = false
+    lateinit var tvTime: TextView
+    lateinit var tvDate: TextView
+    private lateinit var anim: Animation
+    private var wm: WindowManager? = null
+    private var wmpass: WindowManager? = null
+    private var mView: MyGroupView? = null
+    private var passView: GroupViewPassword? = null
+    private var mParams: WindowManager.LayoutParams? = null
+    private var mParamsPass: WindowManager.LayoutParams? = null
+    private var mReceiver: BroadcastReceiver? = null
+    private var isshowPass: Boolean = false
+    private lateinit var linearLayout: LinearLayout
+    lateinit var tvPin: TextView
+    lateinit var tvCanclePass: TextView
+    lateinit var imgPin: ImageView
+    lateinit var listPass: ArrayList<Int>
+    lateinit var imgBackgroundLock: ImageView
+    lateinit var pass1: ImageView
+    lateinit var pass2: ImageView
+    lateinit var pass3: ImageView
+    lateinit var pass4: ImageView
+    lateinit var pass5: ImageView
+    lateinit var pass6: ImageView
+    lateinit var ll_circle_pass: LinearLayout
+    lateinit var ll_frame:FrameLayout
+    lateinit var btn0: Button
+    lateinit var btn1: Button
+    lateinit var btn2: Button
+    lateinit var btn3: Button
+    lateinit var btn4: Button
+    lateinit var btn5: Button
+    lateinit var btn6: Button
+    lateinit var btn7: Button
+    lateinit var btn8: Button
+    lateinit var btn9: Button
+
+    lateinit var tvCall: TextView
+
 }
+
