@@ -72,6 +72,7 @@ class Wallpaper : AppCompatActivity() {
     }
 
     private fun initRecycleview() {
+
         data.add(Image(com.vunhiem.lockscreenios.R.drawable.icon_background_lock))
         data.add(Image(com.vunhiem.lockscreenios.R.drawable.iphone1))
         data.add(Image(com.vunhiem.lockscreenios.R.drawable.iphone2))

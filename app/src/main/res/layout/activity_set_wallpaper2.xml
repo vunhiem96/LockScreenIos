@@ -9,7 +9,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/icon_background_lock"
-            android:scaleType="fitXY"/>
+            android:scaleType="centerCrop"/>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                   android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
@@ -54,28 +54,21 @@
 
         </RelativeLayout>
         <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
-                      android:layout_weight="7.6"
+                      android:layout_weight="8.9"
                       android:orientation="vertical"
                       android:weightSum="10">
             <LinearLayout android:layout_width="match_parent" android:layout_height="0dp"
-                          android:layout_weight="9"
+                          android:layout_weight="8"
                           android:orientation="vertical"
             >
 
-                <RelativeLayout
-                        android:layout_marginTop="50dp"
-                        android:layout_gravity="center_horizontal"
-                        android:background="@drawable/background"
-                        android:layout_width="50dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_height="50dp">
+
                     <ImageView
-                            android:layout_centerVertical="true"
-                            android:layout_centerHorizontal="true"
-                            android:layout_width="20dp"
-                            android:src="@drawable/icon_lock"
-                            android:layout_height="30dp"/>
-                </RelativeLayout>
+                            android:layout_gravity="center_horizontal"
+                            android:layout_width="50dp"
+                            android:src="@drawable/a1"
+                            android:layout_height="50dp"/>
+
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                           android:layout_gravity="center_horizontal"
                           android:text="10:10"
@@ -92,48 +85,91 @@
                         android:id="@+id/tv_date"/>
             </LinearLayout>
             <TextView android:layout_width="wrap_content" android:layout_height="0dp"
-                      android:layout_weight="1"
+                      android:layout_weight="2"
                       android:text="Do you use this picture?"
-            android:textSize="25sp"
-            android:textColor="#FFF"
-            android:textStyle="bold"
-            android:layout_gravity="center_horizontal"/>
+                      android:textSize="25sp"
+                      android:textColor="#FFF"
+                      android:textStyle="bold"
+                      android:layout_gravity="center_horizontal"/>
         </LinearLayout>
 
-        <RelativeLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="2"
-                android:weightSum="2">
-            <Button android:background="@drawable/nenchat"
+        <!--<RelativeLayout-->
+        <!--android:orientation="horizontal"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="0dp"-->
+        <!--android:layout_weight="2"-->
+        <!--android:weightSum="2">-->
+        <!--<Button android:background="@drawable/nenchat"-->
+        <!--android:id="@+id/btn_select"-->
+        <!--android:layout_marginLeft="40dp"-->
+        <!--android:layout_width="100dp" android:layout_height="50dp"-->
+        <!--android:text="Select"/>-->
+
+        <!--<Button-->
+        <!--android:background="@drawable/nenchat"-->
+        <!--android:id="@+id/btn_cancle"-->
+        <!--android:layout_alignParentRight="true" android:layout_width="100dp"-->
+        <!--android:layout_height="50dp"-->
+        <!--android:text="Cancle"-->
+        <!--android:layout_marginRight="40dp"/>-->
+
+        <!--<TextView android:layout_width="wrap_content" android:layout_height="wrap_content"-->
+        <!--android:layout_above="@+id/viewBottom"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:text="Slide up to open"-->
+        <!--android:textColor="#FFFF"-->
+        <!--android:layout_marginBottom="5dp"-->
+
+        <!--/>-->
+        <!--<Button android:id="@+id/viewBottom"-->
+        <!--android:background="@drawable/while_round_bg"-->
+        <!--android:layout_width="200dp" android:layout_height="6dp"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_marginBottom="10dp"/>-->
+        <!--</RelativeLayout>-->
+        <LinearLayout
+                android:layout_width="match_parent" android:layout_height="0dp"
+                      android:layout_weight="0.75"
+                      android:weightSum="2"
+                      android:orientation="horizontal">
+            <LinearLayout
+                    android:background="@drawable/button_selector2"
                     android:id="@+id/btn_select"
-                    android:layout_marginLeft="40dp"
-                    android:layout_width="100dp" android:layout_height="50dp"
-                    android:text="Select"/>
+                    android:clickable="true"
+                    android:layout_width="0dp" android:layout_height="match_parent"
+                    android:layout_weight="1"
+                   >
+                <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                          android:text="Select"
+                          android:gravity="center"
+                          android:textColor="#000"
+                />
+            </LinearLayout>
 
-            <Button
-                    android:background="@drawable/nenchat"
+            <View android:layout_width="1dp" android:layout_height="match_parent"
+                  android:background="#474646"/>
+
+            <LinearLayout
                     android:id="@+id/btn_cancle"
-                    android:layout_alignParentRight="true" android:layout_width="100dp"
-                    android:layout_height="50dp"
-                    android:text="Cancle"
-                    android:layout_marginRight="40dp"/>
+                    android:clickable="true"
+                    android:layout_width="0dp" android:layout_height="match_parent"
+                          android:layout_weight="1"
+                          android:background="@drawable/button_selector2">
+                <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+                          android:text="Cancle"
+                          android:gravity="center"
+                          android:textColor="#000"
+                />
+            </LinearLayout>
+            <!--<Button android:text="Select"-->
+            <!--android:layout_width="match_parent" android:layout_height="match_parent"-->
+            <!--android:layout_weight="1"/>-->
+            <!--<Button-->
+            <!--android:text="Cancle"-->
+            <!--android:layout_width="9dp" android:layout_height="match_parent"-->
+            <!--android:layout_weight="1"/>-->
 
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                      android:layout_above="@+id/viewBottom"
-                      android:layout_centerHorizontal="true"
-                      android:text="Slide up to open"
-                      android:textColor="#FFFF"
-                      android:layout_marginBottom="5dp"
-
-            />
-            <Button android:id="@+id/viewBottom"
-                    android:background="@drawable/while_round_bg"
-                    android:layout_width="200dp" android:layout_height="6dp"
-                    android:layout_alignParentBottom="true"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginBottom="10dp"/>
-        </RelativeLayout>
+        </LinearLayout>
     </LinearLayout>
 </FrameLayout>

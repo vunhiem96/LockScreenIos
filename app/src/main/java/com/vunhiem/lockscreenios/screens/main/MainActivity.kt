@@ -23,12 +23,18 @@ import android.provider.Settings.canDrawOverlays
 import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
+import com.suke.widget.SwitchButton
+import com.vunhiem.lockscreenios.R
+import com.vunhiem.lockscreenios.notification.SetNotification
+import com.vunhiem.lockscreenios.screens.privacy.PrivacyActivity
 
 
-class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener {
+class MainActivity : AppCompatActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(com.vunhiem.lockscreenios.R.layout.activity_main)
+        setContentView(R.layout.activity_main)
         checkAndRequestPermissions()
         switch()
         disableLockSreenSystem()
@@ -63,24 +69,46 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
             startActivity(intent)
         }
         rl_noti.setOnClickListener {
-            Toast.makeText(this,"function is developing",Toast.LENGTH_LONG).show()
+            val intent = Intent(this, SetNotification::class.java)
+            startActivity(intent)
+        }
+        rl_feedback.setOnClickListener {
+            val url = "https://www.facebook.com/vu.nhiem.5"
+            val i = Intent(Intent.ACTION_VIEW)
+            i.data = Uri.parse(url)
+            startActivity(i)
+        }
+        rl_share.setOnClickListener {
+            val url = "https://play.google.com/store/search?q=lock%20screen"
+            val i = Intent(Intent.ACTION_VIEW)
+            i.data = Uri.parse(url)
+            startActivity(i)
+        }
+        rl_privacy.setOnClickListener {
+            val intent = Intent(this, PrivacyActivity::class.java)
+            startActivity(intent)
         }
     }
 
     fun switch() {
-        switch_main.setOnCheckedChangeListener(this)
+        switch_main.setOnCheckedChangeListener(object:SwitchButton.OnCheckedChangeListener{
+            override fun onCheckedChanged(view: SwitchButton?, isChecked: Boolean) {
+                if (isChecked) {
+                    val intent = Intent(this@MainActivity, MyService::class.java)
+                    startService(intent)
+                } else {
+                    val intent = Intent(this@MainActivity, MyService::class.java)
+                    stopService(intent)
+                }
+            }
+
+        })
 
     }
 
-    override fun onCheckedChanged(p0: CompoundButton?, p1: Boolean) {
-        if (p1) {
-            val intent = Intent(this, MyService::class.java)
-            startService(intent)
-        } else {
-            val intent = Intent(this, MyService::class.java)
-            stopService(intent)
-        }
-    }
+
+
+
     private fun checkAndRequestPermissions() {
 
         val permissions = arrayOf(
@@ -89,6 +117,7 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
             Manifest.permission.INTERNET,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA
+
         )
         val listPermissionsNeeded = ArrayList<String>()
         for (permission in permissions) {
@@ -108,3 +137,7 @@ class MainActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener
     }
 
 }
+
+//private fun SwitchButton.setOnCheckedChangeListener(mainActivity: MainActivity) {
+//
+//}

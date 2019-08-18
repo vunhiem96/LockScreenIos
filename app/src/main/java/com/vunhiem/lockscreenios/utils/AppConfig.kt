@@ -1,6 +1,7 @@
 package com.example.ibikenavigationkotlin.utils
 
 import android.content.Context
+import android.media.AudioManager
 
 object AppConfig {
     val PREF_NAME = "Android005"
@@ -50,5 +51,14 @@ object AppConfig {
     fun getIdWallPaperUri(context: Context): String? {
         val sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         return sharedPreferences.getString("idwallpaperuri", null)
+    }
+    fun checkAudio(context: Context): Int {
+        var audioManager: AudioManager
+        audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        if (audioManager.ringerMode == AudioManager.RINGER_MODE_SILENT) {
+            return 1
+        }
+
+        return 0
     }
 }

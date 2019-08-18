@@ -24,7 +24,7 @@ class WallpaperAdapter(val data:ArrayList<Image>,val context: Context):
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         var image:Image = data[position]
-        Picasso.with(context).load(image.id).into(holder.itemView.imgWallpaper)
+        Picasso.with(context).load(image.id).fit().centerCrop().into(holder.itemView.imgWallpaper)
         holder.itemView.imgWallpaper.setOnClickListener {
             val intent = Intent(context, SetWallpaper::class.java)
             intent.putExtra("key", image.id)

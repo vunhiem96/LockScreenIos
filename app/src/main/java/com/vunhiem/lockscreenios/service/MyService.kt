@@ -11,65 +11,63 @@ import android.content.pm.PackageManager
 import android.graphics.PixelFormat
 import android.hardware.Camera
 import android.hardware.camera2.CameraManager
+import android.media.AudioManager
 import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.util.Log
-import android.view.Gravity
-import android.view.MotionEvent
-import android.view.View
-import android.view.WindowManager
+import android.view.*
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.*
+import androidx.annotation.RequiresApi
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.ibikenavigationkotlin.utils.AppConfig
 import com.squareup.picasso.Picasso
 import com.vunhiem.lockscreenios.R
+import com.vunhiem.lockscreenios.model.Notification
+import com.vunhiem.lockscreenios.notification.SwipeToDeleteCallback
+import com.vunhiem.lockscreenios.notification.adapter.NotificationAdaper
 import com.vunhiem.lockscreenios.screens.main.GroupViewPassword
 import com.vunhiem.lockscreenios.screens.main.MyGroupView
 import java.io.File
 import java.text.SimpleDateFormat
 
 
-class MyService : Service() {
+@RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+class MyService : Service()
+{
 
-    override fun onBind(intent: Intent): IBinder {
-        TODO("Return the communication channel to the service.")
+    override fun onBind(p0: Intent?): IBinder? {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+
+    override fun onCreate() {
+        super.onCreate()
+        context = applicationContext
+
+    }
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         initview()
         setTime()
-        return START_REDELIVER_INTENT
+
+        return START_STICKY
     }
 
     private fun initview() {
         wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager?
-        createIconView()
-        swipe()
-        anim = AnimationUtils.loadAnimation(this, R.anim.up)
+        createLockScreen()
+        swipeUpToUnlock()
+
 
 
     }
-//    private fun showIcon() {
-//        try {
-//            wm!!.removeView(m)
-//        } catch (e: Exception) {
-//            println("Bugs")
-//        }
-//
-//        windowManager!!.addView(viewBottom, bottomParams)
-//    }
-//
-//    private fun showControl() {
-//        try {
-//            windowManager!!.removeView(viewBottom)
-//
-//        } catch (e: Exception) {
-//            println("Bugs")
-//        }
-//    }
+
 
     fun setTime() {
         val h = Handler()
@@ -89,7 +87,7 @@ class MyService : Service() {
     }
 
 
-    fun initViewWinManager() {
+    fun setFullScreen() {
         mView!!.setSystemUiVisibility(
             View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -164,7 +162,7 @@ class MyService : Service() {
     }
 
     @SuppressLint("MissingPermission")
-    private fun createIconViewLock() {
+    private fun createPasswordScreen() {
         wmpass = getSystemService(Context.WINDOW_SERVICE) as WindowManager?
         passView = GroupViewPassword(applicationContext)
         val v: View = View.inflate(applicationContext, com.vunhiem.lockscreenios.R.layout.layout_password, passView)
@@ -246,6 +244,7 @@ class MyService : Service() {
             mParams!!.x = 0
             mParams!!.y = 0
 
+
             wmpass!!.addView(passView, mParamsPass)
             Log.i("tag", "onaddPass")
             isshowPass = true
@@ -266,6 +265,7 @@ class MyService : Service() {
         tvCanclePass.setOnClickListener {
             if(listPass.size==0){
                 wmpass!!.removeView(passView)
+                checkNotifiEmpty()
                 wm!!.addView(mView, mParams)
             }else {
                 listPass.clear()
@@ -426,18 +426,22 @@ class MyService : Service() {
         }
     }
 
-    private fun createIconView() {
+    @SuppressLint("WrongConstant")
+    private fun createLockScreen() {
+
         mView = MyGroupView(applicationContext)
         val view: View = View.inflate(applicationContext, com.vunhiem.lockscreenios.R.layout.lock_layout, mView)
         linearLayout = view.findViewById(com.vunhiem.lockscreenios.R.id.ln_lock)
-        initViewWinManager()
+        setFullScreen()
         rlCamera = view.findViewById(com.vunhiem.lockscreenios.R.id.rl_camera)
         rlFlash = view.findViewById(R.id.rl_flash)
         tvTime = view.findViewById(com.vunhiem.lockscreenios.R.id.tv_time)
         tvDate = view.findViewById(com.vunhiem.lockscreenios.R.id.tv_date)
         tvPin = view.findViewById(R.id.tv_pin)
         imgPin = view.findViewById(R.id.img_pin)
-
+        rvNotification = view.findViewById(R.id.rv_notifi)
+//        tab = view.findViewById(R.id.tab)
+        imgClear = view.findViewById(R.id.img_clear)
         ll_frame = view.findViewById(R.id.ll_frame)
 
         imgBackgroundLock = view.findViewById(R.id.img_background_main)
@@ -486,9 +490,44 @@ class MyService : Service() {
             val intent = Intent("android.media.action.IMAGE_CAPTURE")
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
+            wm!!.removeView(view)
 
         }
         mCamera()
+
+        imgClear.setOnClickListener {
+            listNotification.clear()
+            adapter.notifyDataSetChanged()
+            imgClear.setVisibility(View.INVISIBLE)
+        }
+        rvNotification.layoutManager=LinearLayoutManager(applicationContext,LinearLayoutManager.VERTICAL,true)
+        adapter= NotificationAdaper(applicationContext,listNotification,object : NotificationAdaper.ItemNotiListener{
+            override fun onClick(pos: Int) {
+                wm!!.removeView(mView)
+                var xx: Boolean = AppConfig.getStatusPassword(applicationContext)!!
+                Log.i("tag", "onaddPass1")
+                if (xx == true) {
+                    Log.i("tag", "onaddPass2")
+                    createPasswordScreen()
+                }
+            }
+        })
+
+        rvNotification.adapter=adapter
+        val swipeHandler = object : SwipeToDeleteCallback(this) {
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val adapter = rvNotification.adapter as NotificationAdaper
+                adapter.removeAt(viewHolder.adapterPosition)
+                checkNotifiEmpty()
+        }
+        }
+        val itemTouchHelper = ItemTouchHelper(swipeHandler)
+        itemTouchHelper.attachToRecyclerView(rvNotification)
+
+
+
+
+        LocalBroadcastManager.getInstance(context).registerReceiver(onNotice, IntentFilter("Msg"))
 
 
         mReceiver = LockScreenStateReceiver()
@@ -500,7 +539,17 @@ class MyService : Service() {
 
     }
 
-    fun swipe() {
+fun checkNotifiEmpty(){
+
+    if (listNotification.size == 0) {
+        imgClear.setVisibility(View.INVISIBLE)
+    } else {
+        imgClear.setVisibility(View.VISIBLE)
+    }
+
+}
+
+    fun swipeUpToUnlock() {
         linearLayout.setOnTouchListener(View.OnTouchListener { view, motionEvent ->
 
 
@@ -542,8 +591,6 @@ class MyService : Service() {
                 MotionEvent.ACTION_UP -> {
                     if (touchToMove) {
                         mParams!!.y = 0
-                        linearLayout.animation = anim
-                        linearLayout.animation.start()
                         wm!!.removeViewImmediate(mView)
 
 //                        val animUp: Animation = AnimationUtils.loadAnimation(applicationContext, R.anim.up)
@@ -553,7 +600,7 @@ class MyService : Service() {
                         Log.i("tag", "onaddPass1")
                         if (xx == true) {
                             Log.i("tag", "onaddPass2")
-                            createIconViewLock()
+                            createPasswordScreen()
                         }
 
 
@@ -589,6 +636,47 @@ class MyService : Service() {
         })
     }
 
+//    private fun checkAudioSystem() {
+//        // check và set state của chế độ rung Vibrate
+//        if (AppConfig.checkAudio(applicationContext) == 1) {
+//            tbMute.isChecked = true
+//        } else {
+//            tbMute.isChecked = false
+//        }
+//        val audioManager: AudioManager
+//        audioManager = baseContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+//
+//        tbMute.setOnCheckedChangeListener { buttonView, isChecked ->
+//
+//            if (isChecked == true) {
+//                audioManager.setRingerMode(AudioManager.RINGER_MODE_SILENT)
+//
+//            } else {
+//
+//                audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL)
+//            }
+//        }
+//    }
+
+
+    private val onNotice = object : BroadcastReceiver() {
+
+        @SuppressLint("ResourceAsColor", "WrongConstant")
+        override fun onReceive(context: Context, intent: Intent) {
+            val pack = intent.getStringExtra("package")
+            val title = intent.getStringExtra("title")
+            val text = intent.getStringExtra("text")
+
+            listNotification.add(Notification(pack,title,text))
+            checkNotifiEmpty()
+            rvNotification.scrollToPosition(listNotification.size-1)
+            adapter.notifyItemInserted(listNotification.size-1)
+
+
+
+        }
+    }
+
 
     inner class LockScreenStateReceiver : BroadcastReceiver() {
 
@@ -596,7 +684,8 @@ class MyService : Service() {
         override fun onReceive(context: Context, intent: Intent) {
 
             if (intent.action == Intent.ACTION_SCREEN_OFF) {
-                initViewWinManager()
+                checkNotifiEmpty()
+                setFullScreen()
                 Log.i("tag", "OFF")
                 if (wm != null) {
                     try {
@@ -629,10 +718,11 @@ class MyService : Service() {
                 }
 
 
+
             }
             if (intent.action == Intent.ACTION_BATTERY_CHANGED) {
                 Log.i("tag", "on Pin")
-                initViewWinManager()
+                setFullScreen()
                 var level: Int
                 level = intent.getIntExtra("level", 0)
                 tvPin.text = (Integer.toString(level) + "%")
@@ -669,7 +759,6 @@ class MyService : Service() {
     private var touchToMove: Boolean = false
     lateinit var tvTime: TextView
     lateinit var tvDate: TextView
-    private lateinit var anim: Animation
     private var wm: WindowManager? = null
     private var wmpass: WindowManager? = null
     private var mView: MyGroupView? = null
@@ -683,6 +772,8 @@ class MyService : Service() {
     lateinit var tvCanclePass: TextView
     lateinit var imgPin: ImageView
     lateinit var listPass: ArrayList<Int>
+    var listNotification: ArrayList<Notification> = ArrayList()
+    lateinit var rvNotification:RecyclerView
     lateinit var imgBackgroundLock: ImageView
     lateinit var pass1: ImageView
     lateinit var pass2: ImageView
@@ -702,8 +793,12 @@ class MyService : Service() {
     lateinit var btn7: Button
     lateinit var btn8: Button
     lateinit var btn9: Button
-
+    internal lateinit var context: Context
     lateinit var tvCall: TextView
+    lateinit var adapter: NotificationAdaper
+    lateinit var imgClear:ImageView
+    lateinit var wrapper:FrameLayout
+
 
 }
 

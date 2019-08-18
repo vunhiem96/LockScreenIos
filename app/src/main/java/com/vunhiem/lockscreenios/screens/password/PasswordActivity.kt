@@ -5,12 +5,13 @@ import android.os.Bundle
 import android.widget.CompoundButton
 import androidx.appcompat.app.AppCompatActivity
 import com.example.ibikenavigationkotlin.utils.AppConfig
+import com.suke.widget.SwitchButton
 import com.vunhiem.lockscreenios.R
 import com.vunhiem.lockscreenios.service.MyService
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_password.*
 
-class PasswordActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener {
+class PasswordActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,21 +21,22 @@ class PasswordActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeList
     }
     fun switch() {
         var x: Boolean? = AppConfig.getStatusPassword(this)
-        switch_pass.setOnCheckedChangeListener(this@PasswordActivity)
         switch_pass.isChecked= x!!
+        switch_pass.setOnCheckedChangeListener(object: SwitchButton.OnCheckedChangeListener{
+            override fun onCheckedChanged(view: SwitchButton?, isChecked: Boolean) {
+                if (isChecked) {
+                    AppConfig.setStatusPassword(isChecked,this@PasswordActivity)
+                } else {
+                    AppConfig.setStatusPassword(isChecked,this@PasswordActivity)
+                }
+            }
+
+        })
 
     }
 
-    override fun onCheckedChanged(p0: CompoundButton?, p1: Boolean) {
-//        var p1 = AppConfig.getStatusService(this)
-        if (p1) {
-            AppConfig.setStatusPassword(p1,this)
 
-        } else {
-            AppConfig.setStatusPassword(p1,this)
 
-        }
-    }
     private fun onClick() {
         img_back.setOnClickListener {
             finish()
