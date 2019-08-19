@@ -8,16 +8,19 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.graphics.PixelFormat
 import android.hardware.Camera
 import android.hardware.camera2.CameraManager
-import android.media.AudioManager
 import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
 import android.util.Log
-import android.view.*
+import android.view.Gravity
+import android.view.MotionEvent
+import android.view.View
+import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.*
@@ -39,8 +42,7 @@ import java.text.SimpleDateFormat
 
 
 @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-class MyService : Service()
-{
+class MyService : Service() {
 
     override fun onBind(p0: Intent?): IBinder? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -52,6 +54,7 @@ class MyService : Service()
         context = applicationContext
 
     }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         initview()
         setTime()
@@ -63,7 +66,6 @@ class MyService : Service()
         wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager?
         createLockScreen()
         swipeUpToUnlock()
-
 
 
     }
@@ -263,11 +265,11 @@ class MyService : Service()
 
 
         tvCanclePass.setOnClickListener {
-            if(listPass.size==0){
+            if (listPass.size == 0) {
                 wmpass!!.removeView(passView)
                 checkNotifiEmpty()
                 wm!!.addView(mView, mParams)
-            }else {
+            } else {
                 listPass.clear()
                 pass1.setImageResource(R.drawable.circle_password)
                 pass2.setImageResource(R.drawable.circle_password)
@@ -355,7 +357,18 @@ class MyService : Service()
             Log.i("tag", "" + listPass)
 
         }
-
+        if (listPass.size == 6) {
+            btn0.isEnabled
+            btn1.isEnabled
+            btn2.isEnabled
+            btn3.isEnabled
+            btn4.isEnabled
+            btn5.isEnabled
+            btn6.isEnabled
+            btn7.isEnabled
+            btn8.isEnabled
+            btn9.isEnabled
+        }
 
 //}else{
 //    btn0.isEnabled
@@ -440,22 +453,12 @@ class MyService : Service()
         tvPin = view.findViewById(R.id.tv_pin)
         imgPin = view.findViewById(R.id.img_pin)
         rvNotification = view.findViewById(R.id.rv_notifi)
-//        tab = view.findViewById(R.id.tab)
         imgClear = view.findViewById(R.id.img_clear)
         ll_frame = view.findViewById(R.id.ll_frame)
 
         imgBackgroundLock = view.findViewById(R.id.img_background_main)
 
-//        mParams = WindowManager.LayoutParams(
-//            ViewGroup.LayoutParams.WRAP_CONTENT,
-//            ViewGroup.LayoutParams.WRAP_CONTENT,
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY}
-//            else { WindowManager.LayoutParams.TYPE_SYSTEM_ALERT} ,
-//            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-//            PixelFormat.TRANSLUCENT)
-//        mParams!!.x = 0
-//        mParams!!.y = 0
-//        mParams!!.gravity = Gravity.CENTER or Gravity.CENTER
+
 
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -500,26 +503,27 @@ class MyService : Service()
             adapter.notifyDataSetChanged()
             imgClear.setVisibility(View.INVISIBLE)
         }
-        rvNotification.layoutManager=LinearLayoutManager(applicationContext,LinearLayoutManager.VERTICAL,true)
-        adapter= NotificationAdaper(applicationContext,listNotification,object : NotificationAdaper.ItemNotiListener{
-            override fun onClick(pos: Int) {
-                wm!!.removeView(mView)
-                var xx: Boolean = AppConfig.getStatusPassword(applicationContext)!!
-                Log.i("tag", "onaddPass1")
-                if (xx == true) {
-                    Log.i("tag", "onaddPass2")
-                    createPasswordScreen()
+        rvNotification.layoutManager = LinearLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, true)
+        adapter =
+            NotificationAdaper(applicationContext, listNotification, object : NotificationAdaper.ItemNotiListener {
+                override fun onClick(pos: Int) {
+                    wm!!.removeView(mView)
+                    var xx: Boolean = AppConfig.getStatusPassword(applicationContext)!!
+                    Log.i("tag", "onaddPass1")
+                    if (xx == true) {
+                        Log.i("tag", "onaddPass2")
+                        createPasswordScreen()
+                    }
                 }
-            }
-        })
+            })
 
-        rvNotification.adapter=adapter
+        rvNotification.adapter = adapter
         val swipeHandler = object : SwipeToDeleteCallback(this) {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val adapter = rvNotification.adapter as NotificationAdaper
                 adapter.removeAt(viewHolder.adapterPosition)
                 checkNotifiEmpty()
-        }
+            }
         }
         val itemTouchHelper = ItemTouchHelper(swipeHandler)
         itemTouchHelper.attachToRecyclerView(rvNotification)
@@ -539,15 +543,15 @@ class MyService : Service()
 
     }
 
-fun checkNotifiEmpty(){
+    fun checkNotifiEmpty() {
 
-    if (listNotification.size == 0) {
-        imgClear.setVisibility(View.INVISIBLE)
-    } else {
-        imgClear.setVisibility(View.VISIBLE)
+        if (listNotification.size == 0) {
+            imgClear.setVisibility(View.INVISIBLE)
+        } else {
+            imgClear.setVisibility(View.VISIBLE)
+        }
+
     }
-
-}
 
     fun swipeUpToUnlock() {
         linearLayout.setOnTouchListener(View.OnTouchListener { view, motionEvent ->
@@ -570,6 +574,7 @@ fun checkNotifiEmpty(){
                         if (mParams!!.y <= 0) {
                             Log.i("hi", "${(y + delY).toInt()}")
                             wm!!.updateViewLayout(mView, mParams)
+
                         }
                         if (delY * delY > 40000 && mParams!!.y <= 0) {
                             touchToMove = true
@@ -600,6 +605,7 @@ fun checkNotifiEmpty(){
                         Log.i("tag", "onaddPass1")
                         if (xx == true) {
                             Log.i("tag", "onaddPass2")
+
                             createPasswordScreen()
                         }
 
@@ -667,11 +673,10 @@ fun checkNotifiEmpty(){
             val title = intent.getStringExtra("title")
             val text = intent.getStringExtra("text")
 
-            listNotification.add(Notification(pack,title,text))
+            listNotification.add(Notification(pack, title, text))
             checkNotifiEmpty()
-            rvNotification.scrollToPosition(listNotification.size-1)
-            adapter.notifyItemInserted(listNotification.size-1)
-
+            rvNotification.scrollToPosition(listNotification.size - 1)
+            adapter.notifyItemInserted(listNotification.size - 1)
 
 
         }
@@ -716,7 +721,6 @@ fun checkNotifiEmpty(){
                         e.printStackTrace()
                     }
                 }
-
 
 
             }
@@ -773,7 +777,7 @@ fun checkNotifiEmpty(){
     lateinit var imgPin: ImageView
     lateinit var listPass: ArrayList<Int>
     var listNotification: ArrayList<Notification> = ArrayList()
-    lateinit var rvNotification:RecyclerView
+    lateinit var rvNotification: RecyclerView
     lateinit var imgBackgroundLock: ImageView
     lateinit var pass1: ImageView
     lateinit var pass2: ImageView
@@ -782,7 +786,7 @@ fun checkNotifiEmpty(){
     lateinit var pass5: ImageView
     lateinit var pass6: ImageView
     lateinit var ll_circle_pass: LinearLayout
-    lateinit var ll_frame:FrameLayout
+    lateinit var ll_frame: FrameLayout
     lateinit var btn0: Button
     lateinit var btn1: Button
     lateinit var btn2: Button
@@ -796,8 +800,9 @@ fun checkNotifiEmpty(){
     internal lateinit var context: Context
     lateinit var tvCall: TextView
     lateinit var adapter: NotificationAdaper
-    lateinit var imgClear:ImageView
-    lateinit var wrapper:FrameLayout
+    lateinit var imgClear: ImageView
+    lateinit var wrapper: FrameLayout
+    var cowdown:Int=30
 
 
 }

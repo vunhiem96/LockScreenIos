@@ -37,5 +37,7 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.google.android.gms:play-services:6.1.71'
     implementation 'com.github.zcweng:switch-button:0.0.3@aar'
+    implementation 'org.apache.commons:commons-lang3:3.4'
+    implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
 
 }

@@ -27,6 +27,7 @@ import com.suke.widget.SwitchButton
 import com.vunhiem.lockscreenios.R
 import com.vunhiem.lockscreenios.notification.SetNotification
 import com.vunhiem.lockscreenios.screens.privacy.PrivacyActivity
+import com.vunhiem.lockscreenios.service.NotificationService
 
 
 class MainActivity : AppCompatActivity() {
@@ -94,10 +95,10 @@ class MainActivity : AppCompatActivity() {
         switch_main.setOnCheckedChangeListener(object:SwitchButton.OnCheckedChangeListener{
             override fun onCheckedChanged(view: SwitchButton?, isChecked: Boolean) {
                 if (isChecked) {
-                    val intent = Intent(this@MainActivity, MyService::class.java)
+                    val intent = Intent(this@MainActivity, NotificationService::class.java)
                     startService(intent)
                 } else {
-                    val intent = Intent(this@MainActivity, MyService::class.java)
+                    val intent = Intent(this@MainActivity, NotificationService::class.java)
                     stopService(intent)
                 }
             }
@@ -116,7 +117,9 @@ class MainActivity : AppCompatActivity() {
             Manifest.permission.WRITE_SETTINGS,
             Manifest.permission.INTERNET,
             Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.CAMERA
+            Manifest.permission.CAMERA,
+            Manifest.permission.READ_PHONE_STATE
+
 
         )
         val listPermissionsNeeded = ArrayList<String>()

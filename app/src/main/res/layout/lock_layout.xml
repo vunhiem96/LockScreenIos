@@ -26,16 +26,17 @@
             <ImageView
                     android:layout_centerVertical="true"
                     android:id="@+id/img_song" android:layout_width="40dp"
-
                     android:layout_height="match_parent"
                     android:src="@drawable/icon_song"/>
 
             <TextView
+
+                    android:id="@+id/tv_telecom"
                     android:layout_centerVertical="true"
                     android:layout_toRightOf="@+id/img_song"
                     android:layout_width="wrap_content" android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:text="Viettel"
+                    android:text="Vina"
                     android:textColor="#FFFF"
                     android:textSize="13sp"/>
             <TextView

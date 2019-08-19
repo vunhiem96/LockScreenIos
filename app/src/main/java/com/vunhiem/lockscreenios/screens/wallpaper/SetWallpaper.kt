@@ -1,5 +1,6 @@
 package com.vunhiem.lockscreenios.screens.wallpaper
 
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.Window
@@ -20,7 +21,8 @@ class SetWallpaper : AppCompatActivity() {
     private var mView: MyGroupView? = null
     var image: Int = 0
     lateinit var service: MyService
-    var imgID: String? = null
+    var imgID: String?=null
+
 
     lateinit var imgBg: ImageView
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,6 +49,7 @@ class SetWallpaper : AppCompatActivity() {
         val bundle = intent.extras
         var image = bundle!!.getInt("key")
 
+
         if (image != 0) {
             Picasso.with(this)
                 .load(image)
@@ -54,7 +57,8 @@ class SetWallpaper : AppCompatActivity() {
                 .into(img_background)
         } else {
             imgID = intent.getStringExtra("key1")
-            Picasso.with(this).load(File(imgID)).into(img_background)
+            val uri:Uri= Uri.parse(imgID)
+            img_background.setImageURI(uri)
 
         }
 

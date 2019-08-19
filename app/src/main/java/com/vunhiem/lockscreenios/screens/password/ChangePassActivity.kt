@@ -27,6 +27,7 @@ class ChangePassActivity : AppCompatActivity() {
             var mk2: String = edt_pass_again_new.text.toString()
 
             if (mkOld != mkCu) {
+                edt_pass_old.text.clear()
                 Toast.makeText(this, "Old password is not correct", Toast.LENGTH_LONG).show()
             }
 

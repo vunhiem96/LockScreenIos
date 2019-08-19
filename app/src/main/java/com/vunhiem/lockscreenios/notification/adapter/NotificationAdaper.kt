@@ -37,11 +37,11 @@ class NotificationAdaper(var context:Context, var noti:ArrayList<Notification>,p
             listener.onClick(position)
             noti.removeAt(holder.adapterPosition)
             notifyItemRemoved(holder.adapterPosition)
+
             val pm = context.packageManager
-            if(data.appName!="android"){
             val launchIntent = pm.getLaunchIntentForPackage(data.appName)
             context.startActivity(launchIntent)
-            }
+
         }
 
 

@@ -29,6 +29,7 @@ class PasswordAuthentic : AppCompatActivity() {
                 finish()
             }
             else{
+                edt_pass_new.text.clear()
                 Toast.makeText(this, "Password Error", Toast.LENGTH_LONG).show()
             }
         }

@@ -158,7 +158,7 @@
                     android:layout_marginLeft="20dp"
                     android:layout_toRightOf="@id/img_icon_main3" android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Disable system lock"
+                    android:text="Disable system lockscreen"
                     android:textColor="#010101"
                     android:layout_centerVertical="true"
                     android:textSize="16sp"/>

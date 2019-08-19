@@ -16,6 +16,11 @@ import android.graphics.BitmapFactory
 import android.R
 import android.app.Activity
 import android.util.Log
+import android.view.View
+import android.widget.ImageView
+import android.widget.Toast
+import com.theartofdev.edmodo.cropper.CropImage
+import com.theartofdev.edmodo.cropper.CropImageView
 
 
 class Wallpaper : AppCompatActivity() {
@@ -28,45 +33,62 @@ class Wallpaper : AppCompatActivity() {
         initRecycleview()
     }
 
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//
+//        if (requestCode == RESULT_LOAD_IMAGE && resultCode == Activity.RESULT_OK && null != data) {
+//            val selectedImage = data.data
+//            val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
+//
+//            val cursor = contentResolver.query(
+//                selectedImage!!,
+//                filePathColumn, null, null, null
+//            )
+//            cursor!!.moveToFirst()
+//
+//            val columnIndex = cursor.getColumnIndex(filePathColumn[0])
+//            val picturePath = cursor.getString(columnIndex)
+//            cursor.close()
+//            Log.i("tag","$picturePath")
+//            val intent = Intent(this, SetWallpaper::class.java)
+//            intent.putExtra("key1",picturePath)
+//            startActivity(intent)
+////            val imageView = findViewById<View>(R.id.imgView) as ImageView
+////            imageView.setImageBitmap(BitmapFactory.decodeFile(picturePath))
+//
+//        }
+//
+//
+//    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == RESULT_LOAD_IMAGE && resultCode == Activity.RESULT_OK && null != data) {
-            val selectedImage = data.data
-            val filePathColumn = arrayOf(MediaStore.Images.Media.DATA)
-
-            val cursor = contentResolver.query(
-                selectedImage!!,
-                filePathColumn, null, null, null
-            )
-            cursor!!.moveToFirst()
-
-            val columnIndex = cursor.getColumnIndex(filePathColumn[0])
-            val picturePath = cursor.getString(columnIndex)
-            cursor.close()
-            Log.i("tag","$picturePath")
-            val intent = Intent(this, SetWallpaper::class.java)
-            intent.putExtra("key1",picturePath)
+        // handle result of CropImageActivity
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            val result = CropImage.getActivityResult(data)
+            if (resultCode == Activity.RESULT_OK) {
+                val intent = Intent(this, SetWallpaper::class.java)
+                var uri = (result.uri).toString()
+            intent.putExtra("key1",uri)
             startActivity(intent)
-//            val imageView = findViewById<View>(R.id.imgView) as ImageView
-//            imageView.setImageBitmap(BitmapFactory.decodeFile(picturePath))
 
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Toast.makeText(this, "Cropping failed: " + result.error, Toast.LENGTH_LONG).show()
+            }
         }
-
-
     }
 
-
-
     private fun onClick() {
+
         rl_select_from.setOnClickListener {
-            val i = Intent(
-                Intent.ACTION_PICK,
-                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-            )
-
-            startActivityForResult(i, RESULT_LOAD_IMAGE)
-
+        CropImage.activity(null).setGuidelines(CropImageView.Guidelines.ON).start(this)
+//            val i = Intent(
+//                Intent.ACTION_PICK,
+//                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+//            )
+//
+//            startActivityForResult(i, RESULT_LOAD_IMAGE)
+//
         }
 
     }
