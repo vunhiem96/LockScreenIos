@@ -931,7 +931,7 @@ if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     setFullScreen()
                     var level: Int
                     level = intent.getIntExtra("level", 0)
-                    tvPin.text = (Integer.toString(level) + "%")
+                    tvPin!!.text = (Integer.toString(level) + "%")
                     if (level > 50) {
                         imgPin.setImageResource(R.drawable.icon_pin60)
                     } else {
@@ -971,7 +971,7 @@ if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
     private var mReceiver: BroadcastReceiver? = null
     private var isshowPass: Boolean = false
     private lateinit var linearLayout: LinearLayout
-    lateinit var tvPin: TextView
+    var tvPin: TextView?=null
     lateinit var tvCanclePass: TextView
     lateinit var imgPin: ImageView
     lateinit var listPass: ArrayList<Int>
