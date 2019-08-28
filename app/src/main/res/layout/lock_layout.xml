@@ -92,10 +92,10 @@
             >
                 <ImageView
 
-                        android:src="@mipmap/ic_clear2"
+                        android:src="@drawable/ic_ic_delete_all"
                         android:layout_alignParentRight="true"
                         android:id="@+id/img_clear"
-                        android:layout_width="50dp" android:layout_height="30dp"
+                        android:layout_width="40dp" android:layout_height="30dp"
                 />
                 <androidx.recyclerview.widget.RecyclerView
                         android:layout_below="@id/img_clear"

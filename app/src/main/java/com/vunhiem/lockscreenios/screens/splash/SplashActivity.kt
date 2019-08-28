@@ -14,16 +14,13 @@ class SplashActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.splash_activity)
-        loadData()
+//        Glide.with(this).load(R.drawable.splash).into(img_splash)
         splashScreen()
     }
 
     fun splashScreen() {
         val handler = android.os.Handler()
         handler.postDelayed({ screenRouter() }, 1000)
-    }
-    private fun loadData() {
-        Glide.with(this).load(R.drawable.splash).into(img_splash)
     }
 
     private fun screenRouter() {

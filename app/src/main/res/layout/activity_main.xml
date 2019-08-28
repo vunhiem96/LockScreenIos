@@ -125,6 +125,44 @@
                     android:background="#c8c8c8"/>
         </RelativeLayout>
         <RelativeLayout
+                android:id="@+id/rl_cancle_lock"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/button_selector"
+                android:clickable="true">
+            <ImageView
+                    android:padding="4dp"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/ic_icon_setting"
+                    android:id="@+id/img_icon_main3"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerVertical="true"
+                    />
+            <TextView
+                    android:fontFamily="@font/small"
+                    android:layout_marginLeft="20dp"
+                    android:layout_toRightOf="@id/img_icon_main3" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Disable system lockscreen"
+                    android:textColor="#010101"
+                    android:layout_centerVertical="true"
+                    android:textSize="16sp"/>
+            <ImageView
+                    android:layout_marginRight="10dp"
+                    android:padding="5dp"
+                    android:src="@drawable/ic_ic_next"
+                    android:layout_centerVertical="true" android:layout_width="35dp"
+                    android:layout_height="23dp"
+                    android:layout_alignParentRight="true"/>
+            <View
+                    android:layout_marginLeft="70dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_width="match_parent" android:layout_height="1dp"
+                    android:background="#c8c8c8"/>
+
+        </RelativeLayout>
+        <RelativeLayout
                 android:id="@+id/rl_noti"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -149,56 +187,19 @@
                     android:layout_centerVertical="true"
                     android:textSize="16sp"/>
             <ImageView
-                    android:layout_marginRight="10dp"
-                    android:padding="5dp"
-                    android:src="@drawable/ic_ic_next"
-                    android:layout_centerVertical="true" android:layout_width="35dp"
-                    android:layout_height="23dp"
+                    android:id="@+id/img_swith_noti"
+                    android:padding="2dp"
+                    android:src="@drawable/ic_ic_off_2"
+                    android:layout_centerVertical="true" android:layout_width="60dp"
+                    android:layout_height="50dp"
                     android:layout_alignParentRight="true"/>
             <View
-                    android:layout_marginLeft="70dp"
+
                     android:layout_alignParentBottom="true"
                     android:layout_width="match_parent" android:layout_height="1dp"
                     android:background="#c8c8c8"/>
         </RelativeLayout>
-        <RelativeLayout
-                android:id="@+id/rl_cancle_lock"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@drawable/button_selector"
-                android:clickable="true">
-            <ImageView
-                    android:padding="4dp"
-                    android:layout_marginLeft="10dp"
-                    android:src="@drawable/ic_icon_setting"
-                    android:id="@+id/img_icon_main3"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_centerVertical="true"
-            />
-            <TextView
-                    android:fontFamily="@font/small"
-                    android:layout_marginLeft="20dp"
-                    android:layout_toRightOf="@id/img_icon_main3" android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Disable system lockscreen"
-                    android:textColor="#010101"
-                    android:layout_centerVertical="true"
-                    android:textSize="16sp"/>
-            <ImageView
-                    android:layout_marginRight="10dp"
-                    android:padding="5dp"
-                    android:src="@drawable/ic_ic_next"
-                    android:layout_centerVertical="true" android:layout_width="35dp"
-                    android:layout_height="23dp"
-                    android:layout_alignParentRight="true"/>
-            <View
 
-                android:layout_alignParentBottom="true"
-                android:layout_width="match_parent" android:layout_height="1dp"
-                android:background="#c8c8c8"/>
-
-        </RelativeLayout>
         <TextView
                 android:fontFamily="@font/big"
                 android:layout_marginLeft="10dp"
